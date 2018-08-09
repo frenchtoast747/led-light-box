@@ -18,25 +18,31 @@ impl Default for Pixel {
     }
 }
 
+impl From<Pixel> for u32 {
+    fn from(pixel: Pixel) -> Self {
+        pixel.0
+    }
+}
+
 impl Pixel {
     fn new<T: Into<u32>>(r: T, g: T, b: T, w: T) -> Pixel {
         Pixel(r.into() << 24 | g.into() << 16 | b.into() << 8 | w.into())
     }
 
     fn r(self) -> u8 {
-        ((self.0 & 0xff000000) >> 24) as u8
+        ((u32::from(self) & 0xff000000) >> 24) as u8
     }
 
-    fn g(&self) -> u8 {
-        ((self.0 & 0x00ff0000) >> 16) as u8
+    fn g(self) -> u8 {
+        ((u32::from(self) & 0x00ff0000) >> 16) as u8
     }
 
-    fn b(&self) -> u8 {
-        ((self.0 & 0x0000ff00) >> 8) as u8
+    fn b(self) -> u8 {
+        ((u32::from(self) & 0x0000ff00) >> 8) as u8
     }
 
-    fn w(&self) -> u8 {
-        (self.0 & 0x0000ff) as u8
+    fn w(self) -> u8 {
+        (u32::from(self) & 0x0000ff) as u8
     }
 }
 
@@ -75,7 +81,7 @@ static RED: Pixel = Pixel(0xff0000ffu32);
 trait Animation {
     fn setup(&mut self);
     fn update(&mut self, display: &mut Display, delta: f64, elapsed: f64);
-    fn is_finished(&self) -> bool;
+    fn is_finished(&self, elapsed: f64) -> bool;
 }
 
 struct MyAnimation {
@@ -99,7 +105,7 @@ impl Animation for MyAnimation {
         self.i = 0;
     }
 
-    fn update(&mut self, display: &mut Display, elapsed: f64, delta: f64) {
+    fn update(&mut self, display: &mut Display, delta: f64, _elapsed: f64) {
         for y in 0..7 {
             for x in 0..7 {
                 let pixel = if x + y * 7 < self.i {
@@ -113,21 +119,19 @@ impl Animation for MyAnimation {
         self.i = (self.i + 1) % 49;
     }
 
-    fn is_finished(&self) -> bool {
+    fn is_finished(&self, _elapsed: f64) -> bool {
         false
     }
 }
 
-struct GLPixel([f32; 4]);
-
-impl From<Pixel> for GLPixel {
+impl From<Pixel> for graphics::types::Color {
     fn from(pixel: Pixel) -> Self {
-        GLPixel([
+        [
             pixel.r() as f32 / 255.0,
             pixel.g() as f32 / 255.0,
             pixel.b() as f32 / 255.0,
             pixel.w() as f32 / 255.0
-        ])
+        ]
     }
 }
 
@@ -149,8 +153,8 @@ impl Lightbox {
             clear(BLACK, gl);
             for y in 0..7usize {
                 for x in 0..7usize {
-                    let color: GLPixel = display.get_at(x, y).expect("Trying to get a pixel out of bounds").into();
-                    ellipse(color.0, [0.0, 0.0, 500.0 / 7.0, 500.0 / 7.0], ctx.transform.trans(x as f64 * 500.0 / 7.0, y as f64 * 500.0 / 7.0), gl);
+                    let color: types::Color = display.get_at(x, y).expect("Trying to get a pixel out of bounds").into();
+                    ellipse(color, [0.0, 0.0, 500.0 / 7.0, 500.0 / 7.0], ctx.transform.trans(x as f64 * 500.0 / 7.0, y as f64 * 500.0 / 7.0), gl);
                 }
             }
         });
