@@ -1,7 +1,6 @@
 use framework::Display;
 
 pub mod snider;
-pub mod buffer;
 
 pub trait Animation {
     fn setup(&mut self);

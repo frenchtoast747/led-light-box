@@ -1,10 +1,33 @@
 extern crate graphics;
 
 use animation::Animation;
-use animation::buffer::Buffer;
+use buffer::{Buffer, Color, Vec2};
 use framework::Display;
 use framework::Pixel;
 use std::ops::Rem;
+use buffer::Circle;
+
+impl From<Color> for Pixel {
+    fn from(c: Color) -> Self {
+        Pixel::new(
+            (c.x * 255.0).round().min(255.0).max(0.0) as u8,
+            (c.y * 255.0).round().min(255.0).max(0.0) as u8,
+            (c.z * 255.0).round().min(255.0).max(0.0) as u8,
+            (c.w * 255.0).round().min(255.0).max(0.0) as u8,
+        )
+    }
+}
+
+impl Buffer {
+    fn apply_to_display(&self, display: &mut Display) {
+        for y in 0..7usize {
+            for x in 0..7usize {
+                let buffer_pixel = self.at(x, y);
+                display.set_at(x, y, buffer_pixel.scaled_color().into());
+            }
+        }
+    }
+}
 
 pub struct MyAnimation {
     i: i32
@@ -43,45 +66,11 @@ impl Animation for MyAnimation {
         self.i = (self.i + 1) % 49;
     }
 
-    fn is_finished(&self, _elapsed: f64) -> bool {
-        false
+    fn is_finished(&self, elapsed: f64) -> bool {
+        4.9 < elapsed
     }
 }
 
-pub trait Samplable {
-    fn sample(&self, p: graphics::math::Vec2d) -> Option<Pixel>;
-}
-
-struct Circle {
-    radius: f64,
-    origin: graphics::math::Vec2d,
-    color: Pixel,
-}
-
-impl Samplable for Circle {
-    fn sample(&self, p: graphics::math::Vec2d) -> Option<Pixel> {
-        use graphics::math::*;
-        if square_len(sub(p, self.origin)) < self.radius * self.radius {
-            Some(self.color)
-        } else {
-            None
-        }
-    }
-}
-
-impl Circle {
-    fn new(radius: f64, origin: graphics::math::Vec2d, color: Pixel) -> Self {
-        Self { radius, origin, color }
-    }
-
-    fn set_radius(&mut self, radius: f64) {
-        self.radius = radius;
-    }
-
-    fn set_color(&mut self, color: Pixel) {
-        self.color = color;
-    }
-}
 
 #[derive(Default)]
 pub struct CircleAnimation {
@@ -89,23 +78,19 @@ pub struct CircleAnimation {
 }
 
 impl Animation for CircleAnimation {
-    fn setup(&mut self) {}
+    fn setup(&mut self) {
+        self.buffer.clear();
+    }
 
     fn update(&mut self, display: &mut Display, delta: f64, elapsed: f64) {
-        use graphics::math::*;
-        let radius = (elapsed.sin() / 2.0 + 0.5) * 3.5;
-        let circle = Circle::new(radius, [3.0, 3.0], Pixel::new(0u32, 127u32, 255u32, 255u32));
-        for y in 0usize..(7 * 2) {
-            for x in 0usize..(7 * 2) {
-                let p: Vec2d = [(x as f64) / 2.0, (y as f64) / 2.0];
-                if let Some(pixel) = circle.sample(p) {
-                    self.buffer.add_sample(p, pixel);
-                }
-            }
-        }
+        let radius = (-(elapsed as f32 / 2.0f32).cos() / 2.0 + 0.5) * 5.5;
+        let circle = Circle::new(radius, Vec2::new(3.0, 3.0), Color::new(0.0, 0.5, 0.75, 1.0));
+        self.buffer.clear();
+        self.buffer.add_samples_grid(&circle, 8);
+        self.buffer.apply_to_display(display);
     }
 
     fn is_finished(&self, elapsed: f64) -> bool {
-        return elapsed < 15.0;
+        15.0 < elapsed
     }
 }

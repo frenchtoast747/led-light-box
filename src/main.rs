@@ -1,10 +1,14 @@
+extern crate cgmath;
 extern crate glutin_window;
 extern crate graphics;
+#[macro_use]
+extern crate lazy_static;
+extern crate num;
 extern crate opengl_graphics;
 extern crate piston;
 
 use animation::Animation;
-use animation::snider::MyAnimation;
+use animation::snider::{CircleAnimation, MyAnimation};
 use framework::{Display, Pixel};
 use glutin_window::GlutinWindow as Window;
 use opengl_graphics::{GlGraphics, OpenGL};
@@ -14,6 +18,7 @@ use piston::window::WindowSettings;
 
 mod framework;
 mod animation;
+mod buffer;
 
 
 impl From<Pixel> for graphics::types::Color {
@@ -31,6 +36,7 @@ pub struct Lightbox {
     gl: GlGraphics,
     display: Display,
     playlist: Vec<Box<Animation>>,
+    playlist_idx: usize,
     elapsed: f64,
 }
 
@@ -47,7 +53,6 @@ impl Lightbox {
             for y in 0..7usize {
                 for x in 0..7usize {
                     let color: types::Color = display.get_at(x, y).expect("Trying to get a pixel out of bounds").into();
-                    //let color: types::Color = [0.0, 0.5, 1.0, 1.0];
                     ellipse(color, LED_RECT, ctx.transform.trans(x as f64 * 500.0 / 7.0, y as f64 * 500.0 / 7.0), gl);
                 }
             }
@@ -55,8 +60,19 @@ impl Lightbox {
     }
 
     fn update(&mut self, args: &UpdateArgs) {
-        self.playlist[0].update(&mut self.display, args.dt, self.elapsed);
+        let playlist_len = self.playlist.len();
+
+        let animation = &mut self.playlist[self.playlist_idx];
+        animation.update(&mut self.display, args.dt, self.elapsed);
+
         self.elapsed += args.dt;
+
+        if animation.is_finished(self.elapsed) {
+            use std::ops::Rem;
+            self.playlist_idx = (self.playlist_idx + 1).rem(playlist_len);
+            self.elapsed = 0.0;
+        }
+
     }
 }
 
@@ -79,7 +95,8 @@ fn main() {
     let mut app = Lightbox {
         gl: GlGraphics::new(opengl),
         display: Display::default(),
-        playlist: vec![Box::new(MyAnimation::default())],
+        playlist: vec![Box::new(CircleAnimation::default()), Box::new(MyAnimation::default())],
+        playlist_idx: 0,
         elapsed: 0.0,
 
     };
