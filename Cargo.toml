@@ -11,3 +11,11 @@ piston2d-opengl_graphics = "0.53.0"
 cgmath = "0.16.1"
 lazy_static = "1.1.0"
 num = "0.2.0"
+
+[[bin]]
+name = "lightbox-simulator"
+path = "src/main.rs"
+
+[[bin]]
+name = "benchmark"
+path = "src/benchmark-main.rs"

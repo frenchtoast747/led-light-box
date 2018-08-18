@@ -1,51 +1,85 @@
 extern crate graphics;
 
 use animation::Animation;
-use buffer::{Buffer, Color, Vec2};
-use framework::Display;
-use framework::Pixel;
+use cgmath::{InnerSpace, Matrix3, Rad, SquareMatrix, Vector2, Vector3, Vector4};
+use framework::{Display, Pixel};
+use self::helpers::*;
+use std::f64::consts::PI;
 use std::ops::Rem;
-use buffer::Circle;
 
-impl From<Color> for Pixel {
-    fn from(c: Color) -> Self {
-        Pixel::new(
-            (c.x * 255.0).round().min(255.0).max(0.0) as u8,
-            (c.y * 255.0).round().min(255.0).max(0.0) as u8,
-            (c.z * 255.0).round().min(255.0).max(0.0) as u8,
-            (c.w * 255.0).round().min(255.0).max(0.0) as u8,
+pub type Mat3 = Matrix3<f32>;
+pub type Vec2 = Vector2<f32>;
+pub type Vec3 = Vector3<f32>;
+pub type Color = Vector4<f32>;
+
+mod helpers {
+    use super::*;
+
+    pub fn trunc_mod(x: f32, d: f32) -> f32 {
+        x - d * (x / d).floor()
+    }
+
+    pub fn translation(offset: Vec2) -> Mat3 {
+        Mat3::new(
+            1.0, 0.0, 0.0,
+            0.0, 1.0, 0.0,
+            offset.x, offset.y, 1.0,
         )
     }
-}
 
-impl Buffer {
-    fn apply_to_display(&self, display: &mut Display) {
-        for y in 0..7usize {
-            for x in 0..7usize {
-                let buffer_pixel = self.at(x, y);
-                display.set_at(x, y, buffer_pixel.scaled_color().into());
+    fn _scale(factor: Vec2) -> Mat3 {
+        Mat3::new(
+            factor.x, 0.0, 0.0,
+            0.0, factor.y, 0.0,
+            0.0, 0.0, 1.0,
+        )
+    }
+
+    impl From<Color> for Pixel {
+        fn from(c: Color) -> Self {
+            Pixel::new(
+                (c.x * 255.0).round().min(255.0).max(0.0) as u8,
+                (c.y * 255.0).round().min(255.0).max(0.0) as u8,
+                (c.z * 255.0).round().min(255.0).max(0.0) as u8,
+                (c.w * 255.0).round().min(255.0).max(0.0) as u8,
+            )
+        }
+    }
+
+    pub fn super_sample_to_display<S: Sample>(sample: &S, elapsed: f64, display: &mut Display, density: i32) {
+        let samples_per_pixel = density * density;
+        for y in 0usize..7 {
+            for x in 0usize..7 {
+                let mut color = Color::new(0.0, 0.0, 0.0, 0.0);
+                for j in 1..density + 1 {
+                    for i in 1..density + 1 {
+                        let p = Vec2::new(
+                            x as f32 + (i as f32 / (density + 1) as f32),
+                            y as f32 + (j as f32 / (density + 1) as f32),
+                        );
+                        color += sample.sample(p, elapsed).unwrap_or(Color::new(0.0, 0.0, 0.0, 1.0));
+                    }
+                }
+                color /= samples_per_pixel as f32;
+                display.set_at(x, y, color.into());
             }
         }
     }
 }
 
-pub struct MyAnimation {
+// Basic Animation
+
+pub struct BasicAnimation {
     i: i32
 }
 
-impl MyAnimation {
-    pub fn new(i: i32) -> Self {
-        Self { i }
-    }
-}
-
-impl Default for MyAnimation {
+impl Default for BasicAnimation {
     fn default() -> Self {
-        Self::new(0)
+        BasicAnimation { i: 0 }
     }
 }
 
-impl Animation for MyAnimation {
+impl Animation for BasicAnimation {
     fn setup(&mut self) {
         self.i = 0;
     }
@@ -71,26 +105,110 @@ impl Animation for MyAnimation {
     }
 }
 
+// Circle Animation
 
-#[derive(Default)]
 pub struct CircleAnimation {
-    buffer: Buffer,
+    sqr_radius: f32,
+    origin: Vec2,
+    color1: Color,
+    color2: Color,
+}
+
+impl Default for CircleAnimation {
+    fn default() -> Self {
+        CircleAnimation {
+            sqr_radius: 1.0,
+            origin: Vec2::new(3.5, 3.5),
+            color1: Color::new(1.0, 0.5, 0.25, 1.0),
+            color2: Color::new(1.0, 1.0, 1.0, 1.0),
+        }
+    }
+}
+
+impl Sample for CircleAnimation {
+    fn sample(&self, p: Vec2, _t: f64) -> Option<Color> {
+        let origin_to_p = p - self.origin;
+        let sqr_len = origin_to_p.dot(origin_to_p);
+        let factor = sqr_len / self.sqr_radius;
+        if sqr_len < self.sqr_radius {
+            Some(self.color1 * factor + (1.0 - factor) * self.color2)
+        } else {
+            None
+        }
+    }
 }
 
 impl Animation for CircleAnimation {
     fn setup(&mut self) {
-        self.buffer.clear();
+        *self = CircleAnimation::default();
     }
 
-    fn update(&mut self, display: &mut Display, delta: f64, elapsed: f64) {
-        let radius = (-(elapsed as f32 / 2.0f32).cos() / 2.0 + 0.5) * 5.5;
-        let circle = Circle::new(radius, Vec2::new(3.0, 3.0), Color::new(0.0, 0.5, 0.75, 1.0));
-        self.buffer.clear();
-        self.buffer.add_samples_grid(&circle, 8);
-        self.buffer.apply_to_display(display);
+    fn update(&mut self, display: &mut Display, _delta: f64, elapsed: f64) {
+        let radius = (-(elapsed as f32 / 1.0f32).cos() / 2.0 + 0.5) * 5.5;
+        self.sqr_radius = radius * radius;
+        super_sample_to_display(self, elapsed, display, 30);
     }
 
     fn is_finished(&self, elapsed: f64) -> bool {
-        15.0 < elapsed
+        5.0 < elapsed
+    }
+}
+
+// Stripe Animation
+
+pub struct StripeAnimation {
+    transform: Mat3,
+}
+
+impl Default for StripeAnimation {
+    fn default() -> Self {
+        Self {
+            transform: Mat3::identity(),
+        }
+    }
+}
+
+pub trait Sample {
+    fn sample(&self, p: Vec2, t: f64) -> Option<Color>;
+}
+
+impl Sample for StripeAnimation {
+    fn sample(&self, p: Vec2, _elapsed: f64) -> Option<Color> {
+        let p: Vec3 = self.transform * p.extend(1.0);
+
+        if trunc_mod(p.x, 2.0) < 1.0 {
+            let i = (p.x as i32 / 2).rem(4);
+            match i {
+                0 => Some(Color::new(1.0, 0.0, 1.0, 1.0)),
+                1 => Some(Color::new(0.0, 1.0, 1.0, 1.0)),
+                2 => Some(Color::new(1.0, 1.0, 0.0, 1.0)),
+                _ => Some(Color::new(1.0, 1.0, 1.0, 1.0)),
+            }
+        } else {
+            None
+        }
+    }
+}
+
+impl Animation for StripeAnimation {
+    fn setup(&mut self) {
+        self.transform = Mat3::identity();
+    }
+
+    fn update(&mut self, display: &mut Display, _delta: f64, elapsed: f64) {
+        self.transform =
+            {
+                let elapsed = elapsed * 0.7;
+                let y = elapsed * 20.0 / PI;
+                let r = (y.sin() + y) / 4.0;
+                translation(Vec2::new(3.5, 3.5))
+                    * Mat3::from_angle_z(Rad::<f32>(r as f32))
+                    * translation(Vec2::new(-3.5, -3.5))
+            };
+        super_sample_to_display(self, elapsed, display, 30);
+    }
+
+    fn is_finished(&self, elapsed: f64) -> bool {
+        1.0 < elapsed
     }
 }

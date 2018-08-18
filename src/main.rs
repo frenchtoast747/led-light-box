@@ -1,14 +1,12 @@
 extern crate cgmath;
 extern crate glutin_window;
 extern crate graphics;
-#[macro_use]
-extern crate lazy_static;
 extern crate num;
 extern crate opengl_graphics;
 extern crate piston;
 
 use animation::Animation;
-use animation::snider::{CircleAnimation, MyAnimation};
+use animation::snider::{StripeAnimation, CircleAnimation, BasicAnimation};
 use framework::{Display, Pixel};
 use glutin_window::GlutinWindow as Window;
 use opengl_graphics::{GlGraphics, OpenGL};
@@ -18,7 +16,6 @@ use piston::window::WindowSettings;
 
 mod framework;
 mod animation;
-mod buffer;
 
 
 impl From<Pixel> for graphics::types::Color {
@@ -95,7 +92,11 @@ fn main() {
     let mut app = Lightbox {
         gl: GlGraphics::new(opengl),
         display: Display::default(),
-        playlist: vec![Box::new(CircleAnimation::default()), Box::new(MyAnimation::default())],
+        playlist: vec![
+            Box::new(CircleAnimation::default()),
+            Box::new(StripeAnimation::default()),
+            Box::new(BasicAnimation::default()),
+        ],
         playlist_idx: 0,
         elapsed: 0.0,
 
