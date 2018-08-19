@@ -1,8 +1,5 @@
-extern crate graphics;
-
-use animation::Animation;
+use super::super::{Animation, PixelDisplay, Pixel};
 use cgmath::{InnerSpace, Matrix3, Rad, SquareMatrix, Vector2, Vector3, Vector4};
-use framework::{Display, Pixel};
 use self::helpers::*;
 use std::f64::consts::PI;
 use std::ops::Rem;
@@ -14,11 +11,11 @@ pub type Color = Vector4<f32>;
 
 mod helpers {
     use super::*;
-
+    
     pub fn trunc_mod(x: f32, d: f32) -> f32 {
         x - d * (x / d).floor()
     }
-
+    
     pub fn translation(offset: Vec2) -> Mat3 {
         Mat3::new(
             1.0, 0.0, 0.0,
@@ -26,7 +23,7 @@ mod helpers {
             offset.x, offset.y, 1.0,
         )
     }
-
+    
     fn _scale(factor: Vec2) -> Mat3 {
         Mat3::new(
             factor.x, 0.0, 0.0,
@@ -34,7 +31,7 @@ mod helpers {
             0.0, 0.0, 1.0,
         )
     }
-
+    
     impl From<Color> for Pixel {
         fn from(c: Color) -> Self {
             Pixel::new(
@@ -45,8 +42,8 @@ mod helpers {
             )
         }
     }
-
-    pub fn super_sample_to_display<S: Sample>(sample: &S, elapsed: f64, display: &mut Display, density: i32) {
+    
+    pub fn super_sample_to_display<S: Sample, D: PixelDisplay>(sample: &S, elapsed: f64, display: &mut D, density: i32) {
         let samples_per_pixel = density * density;
         for y in 0usize..7 {
             for x in 0usize..7 {
@@ -79,12 +76,12 @@ impl Default for BasicAnimation {
     }
 }
 
-impl Animation for BasicAnimation {
-    fn setup(&mut self) {
+impl<D: PixelDisplay> Animation<D> for BasicAnimation {
+    fn setup(&mut self, display: &mut D) {
         self.i = 0;
     }
-
-    fn update(&mut self, display: &mut Display, _delta: f64, elapsed: f64) {
+    
+    fn update(&mut self, display: &mut D, _delta: f64, elapsed: f64) {
         let elapsed = (elapsed * 20.0).rem(49.0);
         for y in 0..7 {
             for x in 0..7 {
@@ -99,8 +96,8 @@ impl Animation for BasicAnimation {
         }
         self.i = (self.i + 1) % 49;
     }
-
-    fn is_finished(&self, elapsed: f64) -> bool {
+    
+    fn is_finished(&self, display: &mut D, elapsed: f64) -> bool {
         4.9 < elapsed
     }
 }
@@ -138,18 +135,18 @@ impl Sample for CircleAnimation {
     }
 }
 
-impl Animation for CircleAnimation {
-    fn setup(&mut self) {
+impl<D: PixelDisplay> Animation<D> for CircleAnimation {
+    fn setup(&mut self, display: &mut D) {
         *self = CircleAnimation::default();
     }
-
-    fn update(&mut self, display: &mut Display, _delta: f64, elapsed: f64) {
+    
+    fn update(&mut self, display: &mut D, _delta: f64, elapsed: f64) {
         let radius = (-(elapsed as f32 / 1.0f32).cos() / 2.0 + 0.5) * 5.5;
         self.sqr_radius = radius * radius;
         super_sample_to_display(self, elapsed, display, 30);
     }
-
-    fn is_finished(&self, elapsed: f64) -> bool {
+    
+    fn is_finished(&self, display: &mut D, elapsed: f64) -> bool {
         5.0 < elapsed
     }
 }
@@ -175,7 +172,7 @@ pub trait Sample {
 impl Sample for StripeAnimation {
     fn sample(&self, p: Vec2, _elapsed: f64) -> Option<Color> {
         let p: Vec3 = self.transform * p.extend(1.0);
-
+        
         if trunc_mod(p.x, 2.0) < 1.0 {
             let i = (p.x as i32 / 2).rem(4);
             match i {
@@ -190,12 +187,12 @@ impl Sample for StripeAnimation {
     }
 }
 
-impl Animation for StripeAnimation {
-    fn setup(&mut self) {
+impl<D: PixelDisplay> Animation<D> for StripeAnimation {
+    fn setup(&mut self, display: &mut D) {
         self.transform = Mat3::identity();
     }
-
-    fn update(&mut self, display: &mut Display, _delta: f64, elapsed: f64) {
+    
+    fn update(&mut self, display: &mut D, _delta: f64, elapsed: f64) {
         self.transform =
             {
                 let elapsed = elapsed * 0.7;
@@ -207,8 +204,8 @@ impl Animation for StripeAnimation {
             };
         super_sample_to_display(self, elapsed, display, 30);
     }
-
-    fn is_finished(&self, elapsed: f64) -> bool {
+    
+    fn is_finished(&self, display: &mut D, elapsed: f64) -> bool {
         1.0 < elapsed
     }
 }

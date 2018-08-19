@@ -1,0 +1,10 @@
+[package]
+name = "rpi_ws281x_display"
+version = "0.1.0"
+authors = ["Aaron Boman <aaron@aaronboman.com>"]
+
+[dependencies]
+cgmath = "0.16.1"
+lazy_static = "1.1.0"
+rand = "0.5.5"
+rs_ws281x = { git = "https://github.com/rpi-ws281x/rpi-ws281x-rust" }
