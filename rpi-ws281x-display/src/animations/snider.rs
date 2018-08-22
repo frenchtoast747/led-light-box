@@ -206,6 +206,6 @@ impl<D: PixelDisplay> Animation<D> for StripeAnimation {
     }
     
     fn is_finished(&self, display: &mut D, elapsed: f64) -> bool {
-        1.0 < elapsed
+        10.0 < elapsed
     }
 }

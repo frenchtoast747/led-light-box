@@ -12,6 +12,8 @@ cgmath = "0.16.1"
 lazy_static = "1.1.0"
 num = "0.2.0"
 rpi_ws281x_display = { path = "./rpi-ws281x-display" }
+simulator = { path = "./simulator" }
+lightbox = { path = "./lightbox" }
 
 [[bin]]
 name = "lightbox-simulator"

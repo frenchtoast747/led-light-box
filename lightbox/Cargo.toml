@@ -1,0 +1,9 @@
+[package]
+name = "lightbox"
+version = "0.1.0"
+authors = ["Aaron Boman <aaron@aaronboman.com>"]
+
+[dependencies]
+ctrlc = "3.1.1"
+time = "0.1.40"
+rpi_ws281x_display = { path = "../rpi-ws281x-display" }
