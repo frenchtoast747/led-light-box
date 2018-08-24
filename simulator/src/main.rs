@@ -12,8 +12,6 @@ use rpi_ws281x_display::animations::aaron::Fireflies;
 use rpi_ws281x_display::animations::snider::{BasicAnimation, CircleAnimation, StripeAnimation};
 use simulator::Simulator;
 
-mod display;
-
 fn main() {
     let simulator = Simulator::new(7usize, 7usize);
     let mut lightbox = lightbox::LightBox::new(simulator, vec![

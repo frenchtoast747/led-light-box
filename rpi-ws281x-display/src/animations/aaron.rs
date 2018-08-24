@@ -35,8 +35,8 @@ impl Ball {
         let ratio = (self.elapsed / self.ttl).min(1.0);
 
         let brightness = cycle(255.0, ratio, 255.0) as u8;
-        let pos_x = cycle(display.cols() as f64, ratio, self.pos_x as f64) as usize;
-        let pos_y = cycle(display.rows() as f64, ratio, self.pos_y as f64) as usize;
+        let pos_x = cycle((display.cols() - 1) as f64, ratio, self.pos_x as f64) as usize;
+        let pos_y = cycle((display.rows() - 1) as f64, ratio, self.pos_y as f64) as usize;
 
         display.set_at(pos_x, pos_y, self.color.at_brightness(brightness));
     }
@@ -50,11 +50,6 @@ fn cycle(a: f64, ratio: f64, start: f64) -> f64 {
     let p = ((start / a) * PI) - HALF_PI;
     let x = (ratio * TWO_PI);
     ((a * (x - p).sin()) + a) * 0.5
-}
-
-
-fn add_velocity(pos: usize, velocity: f64) -> usize {
-    (pos as f64 + velocity) as usize
 }
 
 
@@ -78,7 +73,6 @@ impl<T: PixelDisplay> Animation<T> for Fireflies {
             self.balls.push(b);
         }
 
-//        display.clear();
         // fade out all of the pixels to imitate trails
         for row in 0..display.rows() {
             for col in 0..display.cols() {

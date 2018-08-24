@@ -1,8 +1,6 @@
 extern crate cgmath;
 extern crate rpi_ws281x_display;
 
-mod display;
-
 use rpi_ws281x_display::Animation;
 use rpi_ws281x_display::animations::snider::*;
 use display::Display;

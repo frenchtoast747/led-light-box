@@ -1,0 +1,13 @@
+[package]
+name = "neopixels"
+version = "0.1.0"
+authors = ["Aaron Boman <aaron@aaronboman.com>"]
+
+#[build]
+#target = "arm-unknown-linxu-gnueabihf"
+
+[dependencies]
+rand = "0.5.5"
+rs_ws281x = { git = "https://github.com/rpi-ws281x/rpi-ws281x-rust" }
+lightbox = { path = "../lightbox" }
+rpi_ws281x_display = { path = "../rpi-ws281x-display" }
