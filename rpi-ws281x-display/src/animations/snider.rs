@@ -77,7 +77,7 @@ impl Default for BasicAnimation {
 }
 
 impl<D: PixelDisplay> Animation<D> for BasicAnimation {
-    fn setup(&mut self, display: &mut D) {
+    fn setup(&mut self, _display: &mut D) {
         self.i = 0;
     }
     
@@ -97,7 +97,7 @@ impl<D: PixelDisplay> Animation<D> for BasicAnimation {
         self.i = (self.i + 1) % 49;
     }
     
-    fn is_finished(&self, display: &mut D, elapsed: f64) -> bool {
+    fn is_finished(&self, _display: &mut D, elapsed: f64) -> bool {
         4.9 < elapsed
     }
 }
@@ -136,7 +136,7 @@ impl Sample for CircleAnimation {
 }
 
 impl<D: PixelDisplay> Animation<D> for CircleAnimation {
-    fn setup(&mut self, display: &mut D) {
+    fn setup(&mut self, _display: &mut D) {
         *self = CircleAnimation::default();
     }
     
@@ -146,7 +146,7 @@ impl<D: PixelDisplay> Animation<D> for CircleAnimation {
         super_sample_to_display(self, elapsed, display, 30);
     }
     
-    fn is_finished(&self, display: &mut D, elapsed: f64) -> bool {
+    fn is_finished(&self, _display: &mut D, elapsed: f64) -> bool {
         5.0 < elapsed
     }
 }
@@ -188,7 +188,7 @@ impl Sample for StripeAnimation {
 }
 
 impl<D: PixelDisplay> Animation<D> for StripeAnimation {
-    fn setup(&mut self, display: &mut D) {
+    fn setup(&mut self, _display: &mut D) {
         self.transform = Mat3::identity();
     }
     
@@ -205,7 +205,7 @@ impl<D: PixelDisplay> Animation<D> for StripeAnimation {
         super_sample_to_display(self, elapsed, display, 30);
     }
     
-    fn is_finished(&self, display: &mut D, elapsed: f64) -> bool {
+    fn is_finished(&self, _display: &mut D, elapsed: f64) -> bool {
         10.0 < elapsed
     }
 }

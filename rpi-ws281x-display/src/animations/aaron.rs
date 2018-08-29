@@ -48,7 +48,7 @@ impl Ball {
 
 fn cycle(a: f64, ratio: f64, start: f64) -> f64 {
     let p = ((start / a) * PI) - HALF_PI;
-    let x = (ratio * TWO_PI);
+    let x = ratio * TWO_PI;
     ((a * (x - p).sin()) + a) * 0.5
 }
 
@@ -60,13 +60,12 @@ pub struct Fireflies {
 }
 
 impl<T: PixelDisplay> Animation<T> for Fireflies {
-    fn setup(&mut self, display: &mut T) {
+    fn setup(&mut self, _display: &mut T) {
         self.balls = Vec::new();
-        let mut rng = thread_rng();
         self.ball_id = 0;
     }
 
-    fn update(&mut self, display: &mut T, delta: f64, elapsed: f64) {
+    fn update(&mut self, display: &mut T, delta: f64, _elapsed: f64) {
         if self.balls.len() < 10 {
             let b = Ball::new(self.ball_id, display.rows(), display.cols());
             self.ball_id += 1;
@@ -88,7 +87,7 @@ impl<T: PixelDisplay> Animation<T> for Fireflies {
         self.balls.retain(|b| !b.is_finished());
     }
 
-    fn is_finished(&self, _: &mut T, elapsed: f64) -> bool {
+    fn is_finished(&self, _display: &mut T, elapsed: f64) -> bool {
         elapsed > 30.0
     }
 }
