@@ -13,7 +13,7 @@ use rpi_ws281x_display::animations::snider::{BasicAnimation, CircleAnimation, St
 use simulator::Simulator;
 
 fn main() {
-    let simulator = Simulator::new(7usize, 7usize);
+    let simulator = Simulator::new(7usize, 7usize, 720u32, 720u32);
     let mut lightbox = lightbox::LightBox::new(
         simulator,
         vec![
