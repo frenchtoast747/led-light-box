@@ -14,12 +14,16 @@ use simulator::Simulator;
 
 fn main() {
     let simulator = Simulator::new(7usize, 7usize);
-    let mut lightbox = lightbox::LightBox::new(simulator, vec![
-        Box::new(CircleAnimation::default()),
-        Box::new(StripeAnimation::default()),
-        Box::new(Fireflies::default()),
-        Box::new(BasicAnimation::default()),
-    ]);
+    let mut lightbox = lightbox::LightBox::new(
+        simulator,
+        vec![
+            Box::new(CircleAnimation::default()),
+            Box::new(StripeAnimation::default()),
+            Box::new(Fireflies::default()),
+            Box::new(BasicAnimation::default()),
+        ],
+        30,
+    );
     lightbox.run_forever();
 }
 

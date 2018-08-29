@@ -8,8 +8,6 @@ use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
 use rpi_ws281x_display::Animation;
 
-const FPS_IN_MS: u64 = 33;
-
 pub struct LightBox<D: PixelDisplay> {
     pixel_display: D,
     playlist: Vec<Box<Animation<D>>>,
@@ -17,10 +15,11 @@ pub struct LightBox<D: PixelDisplay> {
     elapsed: f64,
     last: f64,
     setup: bool,
+    fps: u64,
 }
 
 impl<D: PixelDisplay> LightBox<D> {
-    pub fn new(pixel_display: D, playlist: Vec<Box<Animation<D>>>) -> Self {
+    pub fn new(pixel_display: D, playlist: Vec<Box<Animation<D>>>, fps: u64) -> Self {
         LightBox {
             pixel_display,
             playlist,
@@ -28,6 +27,7 @@ impl<D: PixelDisplay> LightBox<D> {
             elapsed: 0.0,
             last: 0.0,
             setup: true,
+            fps,
         }
     }
 
@@ -61,8 +61,8 @@ impl<D: PixelDisplay> LightBox<D> {
         let to_sleep: u64 = (time::precise_time_s() - now) as u64;
         // only sleep if to_sleep is less than the allotted FPS.
         // otherwise we might be sleep for a very long time...
-        if to_sleep <= FPS_IN_MS {
-            thread::sleep(std_time::Duration::from_millis(FPS_IN_MS - to_sleep));
+        if to_sleep <= self.fps {
+            thread::sleep(std_time::Duration::from_millis(self.fps - to_sleep));
         }
 
         if animation.is_finished(&mut self.pixel_display, self.elapsed) {
