@@ -25,11 +25,14 @@ fn main() {
         .cols(7)
         .build();
 
-    let mut lightbox = lightbox::LightBox::new(display, vec![
-        Box::new(CircleAnimation::default()),
-        Box::new(StripeAnimation::default()),
-        Box::new(Fireflies::default()),
-        Box::new(BasicAnimation::default()),
-    ]);
+    let mut lightbox = lightbox::LightBox::new(
+        display, vec![
+            Box::new(CircleAnimation::default()),
+            Box::new(StripeAnimation::default()),
+            Box::new(Fireflies::default()),
+            Box::new(BasicAnimation::default()),
+        ],
+        30,
+    );
     lightbox.run_forever();
 }
