@@ -16,7 +16,7 @@ mod tests {
 
     #[bench]
     fn bench_stripe_animation(b: &mut Bencher) {
-        let mut d = Simulator::new(7usize, 7usize);
+        let mut d = Simulator::new(7usize, 7usize, 500usize, 500usize);
         let mut a = StripeAnimation::default();
         a.setup(&mut d);
         const DELTA: f64 = 0.01;
