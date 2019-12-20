@@ -7,4 +7,7 @@ authors = ["Aaron Boman <aaron@aaronboman.com>"]
 cgmath = "0.17.0"
 lazy_static = "1.4.0"
 rand = "0.7.2"
+imageproc = "0.19.2"
+image = "0.22.3"
+rusttype = "0.8.2"
 #rs_ws281x = { git = "https://github.com/rpi-ws281x/rpi-ws281x-rust" }

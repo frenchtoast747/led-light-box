@@ -1,6 +1,10 @@
 extern crate rand;
 extern crate cgmath;
 
+extern crate image;
+extern crate rusttype;
+extern crate imageproc;
+
 pub mod animations;
 
 pub trait Animation<T: PixelDisplay> {
