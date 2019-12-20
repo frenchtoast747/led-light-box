@@ -7,7 +7,16 @@ authors = ["Aaron Boman <aaron@aaronboman.com>"]
 #target = "arm-unknown-linxu-gnueabihf"
 
 [dependencies]
-rand = "0.5.5"
-rs_ws281x = { git = "https://github.com/rpi-ws281x/rpi-ws281x-rust" }
+rand = "0.7.2"
+#rs_ws281x = { git = "https://github.com/rpi-ws281x/rpi-ws281x-rust" }
+rs_ws281x = { path = "../rpi-ws281x-rust" }
 lightbox = { path = "../lightbox" }
 rpi_ws281x_display = { path = "../rpi-ws281x-display" }
+
+rocket = "0.4.2"
+rocket_codegen = "0.4.2"
+
+[dependencies.rocket_contrib]
+version = "0.4.2"
+default-features = false
+features = ["json"]

@@ -4,7 +4,7 @@ version = "0.1.0"
 authors = ["Aaron Boman <aaron@aaronboman.com>"]
 
 [dependencies]
-cgmath = "0.16.1"
-lazy_static = "1.1.0"
-rand = "0.5.5"
+cgmath = "0.17.0"
+lazy_static = "1.4.0"
+rand = "0.7.2"
 #rs_ws281x = { git = "https://github.com/rpi-ws281x/rpi-ws281x-rust" }

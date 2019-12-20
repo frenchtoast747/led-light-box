@@ -88,6 +88,7 @@ impl<T: PixelDisplay> Animation<T> for Fireflies {
     }
 
     fn is_finished(&self, _display: &mut T, elapsed: f64) -> bool {
-        elapsed > 30.0
+//        elapsed > 30.0
+        false
     }
 }

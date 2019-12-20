@@ -7,6 +7,30 @@
       <sourceFolder url="file://$MODULE_DIR$/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/simulator/benches" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/benchmark" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/rpi-ws281x-display/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/rpi-ws281x-display/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/rpi-ws281x-display/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/rpi-ws281x-display/benches" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/simulator/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/simulator/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/simulator/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/lightbox/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/lightbox/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/lightbox/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/lightbox/benches" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/rpi-ws281x-rust/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/rpi-ws281x-rust/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/rpi-ws281x-rust/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/rpi-ws281x-rust/benches" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/neopixels/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/neopixels/examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/neopixels/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/neopixels/benches" isTestSource="true" />
+      <excludeFolder url="file://$MODULE_DIR$/lightbox/target" />
+      <excludeFolder url="file://$MODULE_DIR$/neopixels/target" />
+      <excludeFolder url="file://$MODULE_DIR$/rpi-ws281x-display/target" />
+      <excludeFolder url="file://$MODULE_DIR$/rpi-ws281x-rust/target" />
+      <excludeFolder url="file://$MODULE_DIR$/simulator/target" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="inheritedJdk" />

@@ -4,7 +4,7 @@ extern crate opengl_graphics;
 extern crate piston;
 extern crate rpi_ws281x_display;
 
-use piston::input::Input;
+use piston::input::{Input, Event};
 use glutin_window::{GlutinWindow, OpenGL};
 use graphics::types::Color as PistonColor;
 use graphics::Viewport;
@@ -70,6 +70,14 @@ impl PixelDisplay for Simulator {
         MyPixel::from(self.buffer[x + y * self.cols]).0
     }
 
+    fn get_brightness(&self) -> u8 {
+        return 255;
+    }
+
+    fn set_brightness(&mut self, brightness: u8) {
+
+    }
+
     fn render(&mut self) {
         self.flush_input();
 
@@ -108,7 +116,6 @@ impl Simulator {
             "Lightbox Simulator",
             [width, height],
         )
-            .opengl(opengl)
             .exit_on_esc(true)
             .resizable(false)
             .build()
@@ -139,8 +146,9 @@ impl Simulator {
 
     fn flush_input(&mut self) {
         loop {
+            let thing = Window::poll_event(&mut self.window);
             match Window::poll_event(&mut self.window) {
-                Some(Input::Resize(_, _)) => {
+                Some(Event::Input(Input::Resize(_), _)) => {
                     let window_size = self.window.size();
                     let draw_size = self.window.draw_size();
                     self.viewport_full = Viewport {
@@ -155,16 +163,3 @@ impl Simulator {
         }
     }
 }
-
-/*
-let mut events = Events::new(EventSettings::new());
-while let Some(e) = events.next(&mut window) {
-    if let Some(r) = e.render_args() {
-        app.render(&r);
-    }
-
-    if let Some(u) = e.update_args() {
-        app.update(&u);
-    }
-}
-*/

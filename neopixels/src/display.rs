@@ -124,8 +124,16 @@ impl PixelDisplay for GridDisplay {
     fn clear(&mut self) {
         for col in 0..self.cols {
             for row in 0..self.rows {
-                self.set_at(col, row, Pixel::default())
+                self.set_at(col, row, (0).into());
             }
         }
+    }
+
+    fn get_brightness(&self) -> u8 {
+        return self.controller.get_brightness(0)
+    }
+
+    fn set_brightness(&mut self, brightness: u8){
+        self.controller.set_brightness(0, brightness);
     }
 }

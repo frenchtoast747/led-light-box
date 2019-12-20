@@ -4,6 +4,6 @@ version = "0.1.0"
 authors = ["Aaron Boman <aaron@aaronboman.com>"]
 
 [dependencies]
-ctrlc = "3.1.1"
-time = "0.1.40"
+ctrlc = "3.1.3"
+time = "0.2.0"
 rpi_ws281x_display = { path = "../rpi-ws281x-display" }

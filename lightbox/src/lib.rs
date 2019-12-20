@@ -9,7 +9,7 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use rpi_ws281x_display::Animation;
 
 pub struct LightBox<D: PixelDisplay> {
-    pixel_display: D,
+    pub display: D,
     playlist: Vec<Box<Animation<D>>>,
     playlist_idx: usize,
     elapsed: f64,
@@ -21,7 +21,7 @@ pub struct LightBox<D: PixelDisplay> {
 impl<D: PixelDisplay> LightBox<D> {
     pub fn new(pixel_display: D, playlist: Vec<Box<Animation<D>>>, fps: u64) -> Self {
         LightBox {
-            pixel_display,
+            display: pixel_display,
             playlist,
             playlist_idx: 0,
             elapsed: 0.0,
@@ -46,14 +46,14 @@ impl<D: PixelDisplay> LightBox<D> {
 
         let animation = &mut self.playlist[self.playlist_idx];
         if self.setup {
-            animation.setup(&mut self.pixel_display);
+            animation.setup(&mut self.display);
             self.setup = false;
         }
 
-        animation.update(&mut self.pixel_display, diff, self.elapsed);
+        animation.update(&mut self.display, diff, self.elapsed);
 
         self.elapsed += diff;
-        self.pixel_display.render();
+        self.display.render();
 
         // try to maintain the number of frames per second,
         // subtract the amount of time it took to do the last animation from
@@ -65,13 +65,18 @@ impl<D: PixelDisplay> LightBox<D> {
             thread::sleep(std_time::Duration::from_millis(self.fps - to_sleep));
         }
 
-        if animation.is_finished(&mut self.pixel_display, self.elapsed) {
+        if animation.is_finished(&mut self.display, self.elapsed) {
             use std::ops::Rem;
             self.playlist_idx = (self.playlist_idx + 1).rem(len);
             self.elapsed = 0.0;
             self.last = time::precise_time_s();
             self.setup = true;
         }
+    }
+
+    pub fn clear(&mut self) {
+        self.display.clear();
+        self.display.render();
     }
 
     pub fn run_forever(&mut self) {
@@ -89,8 +94,8 @@ impl<D: PixelDisplay> LightBox<D> {
 
 impl<D: PixelDisplay> Drop for LightBox<D> {
     fn drop(&mut self) {
-        self.pixel_display.clear();
-        self.pixel_display.render();
+        self.display.clear();
+        self.display.render();
     }
 }
 

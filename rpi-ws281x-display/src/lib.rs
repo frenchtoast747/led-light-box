@@ -16,6 +16,8 @@ pub trait PixelDisplay {
     fn get_at<T: Into<usize>>(&self, x: T, y: T) -> Pixel;
     fn render(&mut self);
     fn clear(&mut self);
+    fn get_brightness(&self) -> u8;
+    fn set_brightness(&mut self, brightness: u8);
 }
 
 #[derive(Debug, Copy, Clone)]
