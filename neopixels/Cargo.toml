@@ -15,6 +15,7 @@ rpi_ws281x_display = { path = "../rpi-ws281x-display" }
 
 rocket = "0.4.2"
 rocket_codegen = "0.4.2"
+rocket_cors = "0.5.1"
 
 [dependencies.rocket_contrib]
 version = "0.4.2"

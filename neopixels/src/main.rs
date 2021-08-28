@@ -30,6 +30,8 @@ use lightbox::LightBox;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
 use std::ops::DerefMut;
+use rocket::http::Method;
+use rocket_cors::{AllowedOrigins, CorsOptions};
 
 type ManagerState<'a> = State<'a, Arc<Mutex<Manager>>>;
 
@@ -141,8 +143,19 @@ fn main() {
 
     let manager = Manager {lightbox: MyLightBox(lightbox), thread: None, running: Arc::new(AtomicBool::new(false))};
 
+    let cors = CorsOptions::default()
+        .allowed_origins(AllowedOrigins::all())
+        .allowed_methods(
+            vec![Method::Get, Method::Post, Method::Patch]
+                .into_iter()
+                .map(From::from)
+                .collect(),
+        )
+        .allow_credentials(true);
+
     {
         rocket::ignite()
+            .attach(cors.to_cors().unwrap())
             .mount("/", routes![index, power_status, set_power, brightness_status, set_brightness])
             .manage(Arc::new(Mutex::new(manager)))
             .launch();
