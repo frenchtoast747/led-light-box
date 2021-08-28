@@ -1,8 +1,7 @@
 #![feature(plugin)]
-#![plugin(rocket_codegen)]
 
-extern crate rocket;
-#[macro_use]
+#![feature(proc_macro_hygiene, decl_macro)]
+#[macro_use] extern crate rocket;
 extern crate rocket_contrib;
 
 extern crate rpi_ws281x_display;
